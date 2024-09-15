@@ -11,7 +11,7 @@ permissions:
   contents: read  
  
 jobs:
- cfn-deplyment:
+ cfn-deployment:
    if: github.ref == 'refs/heads/main'
    runs-on: ubuntu-latest
    environment: production
@@ -23,6 +23,8 @@ jobs:
 
      - name: 'cfn-deploy'
        run: |
+        pwd
+        ls -la
         aws cloudformation create-stack \
           --stack-name network-stack \
           --template-body file://Cloud-Formation-Resource-Creation.yaml \
