@@ -1,0 +1,32 @@
+name: CFN Deployment
+ 
+on: 
+#  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+permissions:
+  id-token: write
+  contents: read  
+ 
+jobs:
+ cfn-deplyment:
+   if: github.ref == 'refs/heads/main'
+   runs-on: ubuntu-latest
+   environment: production
+   defaults:
+     run:
+       shell: bash
+ 
+   steps:
+
+     - name: 'cfn-deploy'
+       run: |
+        aws cloudformation create-stack \
+          --stack-name network-stack \
+          --template-body file://Cloud-Formation-Resource-Creation.yaml \
+          --capabilities CAPABILITY_AUTO_EXPAND
+
+
+
