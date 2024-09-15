@@ -20,6 +20,8 @@ jobs:
        shell: bash
  
    steps:
+     - name: 'Checkout the repository to the runner'
+       uses: actions/checkout@v2
 
      - name: 'cfn-deploy'
        run: |
