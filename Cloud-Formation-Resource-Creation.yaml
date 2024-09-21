@@ -215,54 +215,54 @@ Resources:
           RuleAction: allow
           CidrBlock: 0.0.0.0/0
 
-# ## Creating NATGateway ## 
+## Creating NATGateway ## 
 
-#   'Fn::ForEach::NateGateways':
-#     - NATGate
-#     - [A, B]
-#     - '${NATGate}NATGateway': 
-#         Type: AWS::EC2::NatGateway
-#         Properties:
-#           AllocationId: 
-#             Fn::GetAtt: 
-#               - Fn::Sub: ${NATGate}NATElasticIP
-#               - AllocationId
-#           SubnetId: 
-#             Ref:
-#               Fn::Sub: '${NATGate}PublicSubnet'
-#           Tags:
-#             - Key: Name
-#               Value:
-#                 Fn::Sub: '${NATGate}NAT'
+  'Fn::ForEach::NateGateways':
+    - NATGate
+    - [A, B]
+    - '${NATGate}NATGateway': 
+        Type: AWS::EC2::NatGateway
+        Properties:
+          AllocationId: 
+            Fn::GetAtt: 
+              - Fn::Sub: ${NATGate}NATElasticIP
+              - AllocationId
+          SubnetId: 
+            Ref:
+              Fn::Sub: '${NATGate}PublicSubnet'
+          Tags:
+            - Key: Name
+              Value:
+                Fn::Sub: '${NATGate}NAT'
 
-# # Creating EIP ##
+# Creating EIP ##
 
-#   'Fn::ForEach::NateGatewayEIP':
-#     - NATEIP
-#     - [A, B]
-#     - '${NATEIP}NATElasticIP': 
-#         Type: AWS::EC2::EIP
-#         Properties:       
-#           Tags:
-#             - Key: Name
-#               Value:
-#                 Fn::Sub: '${NATEIP}NACL'
+  'Fn::ForEach::NateGatewayEIP':
+    - NATEIP
+    - [A, B]
+    - '${NATEIP}NATElasticIP': 
+        Type: AWS::EC2::EIP
+        Properties:       
+          Tags:
+            - Key: Name
+              Value:
+                Fn::Sub: '${NATEIP}NACL'
 
-# # Creating Routein Privatesubnet to NATGateway ##
+# Creating Routein Privatesubnet to NATGateway ##
   
-#   'Fn::ForEach::NATGatewayRoute':
-#   - NATRoute
-#   - [A, B]
-#   - 'PrivateSubnet${NATRoute}Entry':
-#       Type: AWS::EC2::Route
-#       Properties:
-#         DestinationCidrBlock: 0.0.0.0/0
-#         RouteTableId: 
-#           Ref: 
-#             Fn::Sub: 'CFT${NATRoute}PrivateRouteTable'
-#         NatGatewayId: 
-#           Ref:
-#             Fn::Sub: '${NATRoute}NATGateway' 
+  'Fn::ForEach::NATGatewayRoute':
+  - NATRoute
+  - [A, B]
+  - 'PrivateSubnet${NATRoute}Entry':
+      Type: AWS::EC2::Route
+      Properties:
+        DestinationCidrBlock: 0.0.0.0/0
+        RouteTableId: 
+          Ref: 
+            Fn::Sub: 'CFT${NATRoute}PrivateRouteTable'
+        NatGatewayId: 
+          Ref:
+            Fn::Sub: '${NATRoute}NATGateway' 
  
 
 ## KeyPair##
@@ -315,132 +315,132 @@ Resources:
               systemctl enable httpd
               echo "<h1>This is my instance: $(ec2-metadata --availability-zone) from ${AWS::Region} </h1>" >> /var/www/html/index.html
 
-# ## Auto Scaling
-#   CFASG:
-#     Type: AWS::AutoScaling::AutoScalingGroup
-#     Properties:
-#       LaunchTemplate:
-#         LaunchTemplateId: 
-#           Ref: MyLaunchTemplate
-#         Version: 
-#           Fn::GetAtt: 
-#             - MyLaunchTemplate
-#             - LatestVersionNumber
-#       MaxSize: '2'
-#       MinSize: '2'
-#       VPCZoneIdentifier: 
-#         - Ref: APrivateSubnet
-#         - Ref: BPrivateSubnet
-#       MetricsCollection: 
-#         - Granularity: 1Minute
-#           Metrics: 
-#             - GroupMinSize
-#             - GroupMaxSize
-#       TargetGroupARNs:
-#         - Ref: TargetGroup    
-#       HealthCheckType: ELB  
-# ## Target Group ##
-#   TargetGroup:
-#     Type: AWS::ElasticLoadBalancingV2::TargetGroup
-#     Properties:
-#       HealthCheckEnabled: true
-#       HealthCheckIntervalSeconds: 10
-#       HealthCheckPath: /
-#       HealthCheckPort: 80
-#       HealthCheckProtocol: HTTP
-#       HealthCheckTimeoutSeconds: 5
-#       HealthyThresholdCount: 3
-#       IpAddressType: ipv4
-#       Matcher: 
-#         HttpCode: 200
-#       Name: CFTargetGroup
-#       Port: 80
-#       Protocol: HTTP
-#       ProtocolVersion: HTTP1
-#       Tags: 
-#         - Key: Name
-#           Value: CFTargetGroup
-#       TargetType: instance
-#       UnhealthyThresholdCount: 2
-#       VpcId: 
-#         Ref: CFVPC 
+## Auto Scaling
+  CFASG:
+    Type: AWS::AutoScaling::AutoScalingGroup
+    Properties:
+      LaunchTemplate:
+        LaunchTemplateId: 
+          Ref: MyLaunchTemplate
+        Version: 
+          Fn::GetAtt: 
+            - MyLaunchTemplate
+            - LatestVersionNumber
+      MaxSize: '2'
+      MinSize: '2'
+      VPCZoneIdentifier: 
+        - Ref: APrivateSubnet
+        - Ref: BPrivateSubnet
+      MetricsCollection: 
+        - Granularity: 1Minute
+          Metrics: 
+            - GroupMinSize
+            - GroupMaxSize
+      TargetGroupARNs:
+        - Ref: TargetGroup    
+      HealthCheckType: ELB  
+## Target Group ##
+  TargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      HealthCheckEnabled: true
+      HealthCheckIntervalSeconds: 10
+      HealthCheckPath: /
+      HealthCheckPort: 80
+      HealthCheckProtocol: HTTP
+      HealthCheckTimeoutSeconds: 5
+      HealthyThresholdCount: 3
+      IpAddressType: ipv4
+      Matcher: 
+        HttpCode: 200
+      Name: CFTargetGroup
+      Port: 80
+      Protocol: HTTP
+      ProtocolVersion: HTTP1
+      Tags: 
+        - Key: Name
+          Value: CFTargetGroup
+      TargetType: instance
+      UnhealthyThresholdCount: 2
+      VpcId: 
+        Ref: CFVPC 
 
-# ##  Security Group for the ALB **
-#   ALBSecurityGroup:
-#     Type: 'AWS::EC2::SecurityGroup'
-#     Properties: 
-#       GroupDescription: Security group for ALB
-#       VpcId: 
-#         Ref: CFVPC 
-#       SecurityGroupIngress:
-#         - IpProtocol: tcp
-#           FromPort: 80
-#           ToPort: 80
-#           CidrIp: 0.0.0.0/0
+##  Security Group for the ALB **
+  ALBSecurityGroup:
+    Type: 'AWS::EC2::SecurityGroup'
+    Properties: 
+      GroupDescription: Security group for ALB
+      VpcId: 
+        Ref: CFVPC 
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
 
-#   ## Application Load Balancer ##
-#   ApplicationLoadBalancer:
-#     Type: AWS::ElasticLoadBalancingV2::LoadBalancer
-#     Properties:
-#       IpAddressType: ipv4
-#       LoadBalancerAttributes:
-#         - Key: idle_timeout.timeout_seconds
-#           Value: '60'
-#       Name: 
-#         Fn::Sub: "${AWS::StackName}-Alb"
-#       Scheme: internet-facing
-#       SecurityGroups: 
-#         - Ref: ALBSecurityGroup
-#       Subnets: 
-#         - Ref: APublicSubnet
-#         - Ref: BPublicSubnet        
-#       Tags: 
-#         - Key: Name
-#           Value: ALB
-#       Type: application
+  ## Application Load Balancer ##
+  ApplicationLoadBalancer:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      IpAddressType: ipv4
+      LoadBalancerAttributes:
+        - Key: idle_timeout.timeout_seconds
+          Value: '60'
+      Name: 
+        Fn::Sub: "${AWS::StackName}-Alb"
+      Scheme: internet-facing
+      SecurityGroups: 
+        - Ref: ALBSecurityGroup
+      Subnets: 
+        - Ref: APublicSubnet
+        - Ref: BPublicSubnet        
+      Tags: 
+        - Key: Name
+          Value: ALB
+      Type: application
 
-# ## Listener for the ALB ##
-#   ALBListener:
-#     Type: AWS::ElasticLoadBalancingV2::Listener
-#     Properties:
-#       DefaultActions:
-#         - Type: forward
-#           TargetGroupArn: !Ref TargetGroup
-#       LoadBalancerArn: 
-#         Ref: ApplicationLoadBalancer
-#       Port: 80
-#       Protocol: HTTP
+## Listener for the ALB ##
+  ALBListener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      DefaultActions:
+        - Type: forward
+          TargetGroupArn: !Ref TargetGroup
+      LoadBalancerArn: 
+        Ref: ApplicationLoadBalancer
+      Port: 80
+      Protocol: HTTP
 
-# Outputs:
-#   MainVPC:
-#     Description: VPC Id
-#     Value: 
-#       Ref: CFVPC
-#     Export:
-#       Name: 
-#         Fn::Sub: ${AWS::StackName}-VPC
+Outputs:
+  MainVPC:
+    Description: VPC Id
+    Value: 
+      Ref: CFVPC
+    Export:
+      Name: 
+        Fn::Sub: ${AWS::StackName}-VPC
 
-#   'Fn::ForEach::SubnetOutput':
-#     - Subnet
-#     - [APublic, APrivate, BPublic, BPrivate]
-#     - '${Subnet}SubnetOutput':
-#         Description:
-#           Fn::Sub: Subnet Id-${Subnet}
-#         Value: 
-#           Ref:
-#             Fn::Sub: ${Subnet}Subnet
-#         Export:
-#           Name: 
-#             Fn::Sub: ${AWS::StackName}-${Subnet}Subnet
+  'Fn::ForEach::SubnetOutput':
+    - Subnet
+    - [APublic, APrivate, BPublic, BPrivate]
+    - '${Subnet}SubnetOutput':
+        Description:
+          Fn::Sub: Subnet Id-${Subnet}
+        Value: 
+          Ref:
+            Fn::Sub: ${Subnet}Subnet
+        Export:
+          Name: 
+            Fn::Sub: ${AWS::StackName}-${Subnet}Subnet
 
-#   keypair:
-#     Description: Value of the Private key
-#     Value: 
-#       Fn::GetAtt: 
-#         - Ec2KeyPair
-#         - KeyFingerprint
+  keypair:
+    Description: Value of the Private key
+    Value: 
+      Fn::GetAtt: 
+        - Ec2KeyPair
+        - KeyFingerprint
 
-#   ALBURL:
-#     Description: "URL of the ALB"
-#     Value: 
-#       Fn::Sub: "http://${ApplicationLoadBalancer.DNSName}"
+  ALBURL:
+    Description: "URL of the ALB"
+    Value: 
+      Fn::Sub: "http://${ApplicationLoadBalancer.DNSName}"
